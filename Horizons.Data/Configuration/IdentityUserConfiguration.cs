@@ -9,8 +9,8 @@ namespace Horizons.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<IdentityUser> entity)
         {
-            //entity
-                //.HasData(this.CreateDefaultAdminUser());
+            entity
+                .HasData(this.CreateDefaultAdminUser());
         }
 
         private IdentityUser CreateDefaultAdminUser() 

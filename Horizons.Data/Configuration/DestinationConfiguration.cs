@@ -53,8 +53,8 @@ namespace Horizons.Data.Configuration
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            //entity
-            //.HasData(this.GenerateSeedDestinations());
+            entity
+                .HasData(this.GenerateSeedDestinations());
         }
 
         private List<Destination> GenerateSeedDestinations()

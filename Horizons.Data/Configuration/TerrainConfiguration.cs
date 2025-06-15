@@ -18,8 +18,8 @@ namespace Horizons.Data.Configuration
                 .IsRequired()
                 .HasMaxLength(NameMaxLength);
 
-            //entity
-                //.HasData(this.GenerateSeedTerrains());
+            entity
+                .HasData(this.GenerateSeedTerrains());
         }
 
         private List<Terrain> GenerateSeedTerrains()

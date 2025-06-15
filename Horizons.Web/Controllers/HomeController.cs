@@ -2,11 +2,13 @@
 {
     using System.Diagnostics;
 
+    using Microsoft.AspNetCore.Mvc;
+
     using ViewModels;
 
-    using Microsoft.AspNetCore.Mvc;
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
+        [HttpGet]
         public IActionResult Index()
         {
             return View();

@@ -3,9 +3,9 @@
     using Horizons.Data.Models;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    public class ApplicationDbContext : IdentityDbContext
+    public class HorizonDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public HorizonDbContext(DbContextOptions<HorizonDbContext> options)
             : base(options)
         {
 

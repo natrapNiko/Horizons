@@ -42,15 +42,19 @@ namespace Horizons.Data.Configuration
             entity
                 .HasOne(d => d.Publisher)
                 .WithMany()
-                .HasForeignKey(d => d.PublisherId);
+                .HasForeignKey(d => d.PublisherId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             entity
                 .HasOne(d => d.Terrain)
                 .WithMany(t => t.Destinations)
-                .HasForeignKey(d => d.TerrainId);
+                .HasForeignKey(d => d.TerrainId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             //entity
-                //.HasData(this.GenerateSeedDestinations());
+            //.HasData(this.GenerateSeedDestinations());
         }
 
         private List<Destination> GenerateSeedDestinations()

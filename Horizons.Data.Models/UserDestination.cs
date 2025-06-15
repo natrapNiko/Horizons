@@ -6,7 +6,7 @@ namespace Horizons.Data.Models
     {
         public string UserId { get; set; } = null!;
 
-        public IdentityUser User { get; set; } = null!;
+        public virtual IdentityUser User { get; set; } = null!;
 
         public int DestinationId { get; set; }
 

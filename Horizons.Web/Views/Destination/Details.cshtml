@@ -6,7 +6,10 @@
     If true, the "Favorites" button will not be displayed.
 *@
 
-@* @{
+@using Horizons.Web.ViewModels.Destination
+@model DestinationDetailsViewModel
+
+@{
     ViewData["Title"] = "Destination Details";
 }
 
@@ -33,9 +36,9 @@
             <hr />
             <p class="card-text">@Model.Description</p>
             <hr />
-            <p class="card-text"><small class="text-muted">Terrain: @Model.Terrain</small></p>
-            <p class="card-text"><small class="text-muted">Published On: @Model.PublishedOn.ToString("dd/MM/yyyy")</small></p>
-            <p class="card-text"><small class="text-muted">Publisher: @Model.Publisher</small></p>
+            <p class="card-text"><small class="text-muted">Terrain: @Model.TerrainName</small></p>
+            <p class="card-text"><small class="text-muted">Published On: @Model.PublishedOn</small></p>
+            <p class="card-text"><small class="text-muted">Publisher: @Model.PublisherName</small></p>
             <hr />
         </div>
         <div class="card-footer text-center">
@@ -43,7 +46,7 @@
                 <a asp-controller="Destination" asp-action="Index" class="btn btn-warning d-flex justify-content-center align-items-center flex-fill mx-1">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                @if (User?.Identity?.IsAuthenticated == true && !Model.IsPublisher && !Model.IsFavorite)
+                @if (User?.Identity?.IsAuthenticated == true && !Model.IsUserPublisher && !Model.IsInUserFavorites)
                 {
                     <form asp-controller="Destination" asp-action="AddToFavorites" method="post" class="d-flex justify-content-center align-items-center flex-fill mx-1">
                         <input type="hidden" name="id" value="@Model.Id" />
@@ -52,7 +55,7 @@
                         </button>
                     </form>
                 }
-                @if (Model.IsPublisher)
+                @if (Model.IsUserPublisher)
                 {
                     <a asp-controller="Destination" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary d-flex justify-content-center align-items-center flex-fill mx-1">
                         <i class="fas fa-edit"></i> Edit
@@ -65,4 +68,4 @@
         </div>
     </div>
 </div>
- *@
+ 

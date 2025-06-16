@@ -11,7 +11,7 @@ namespace Horizons.Web.Controllers
             return this.User.Identity?.IsAuthenticated ?? false;
         }
 
-        //
+        
         protected string GetUserId() 
         {
             string? userId = null;

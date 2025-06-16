@@ -2,7 +2,7 @@
 namespace Horizons.Data.Configuration
 {
     using Horizons.Data.Models;
-    using static Horizons.GCommon.ValidationConstatnts.Destination;
+    using static Horizons.GCommon.ValidationConstants.Destination;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

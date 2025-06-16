@@ -1,6 +1,6 @@
 ﻿namespace Horizons.GCommon
 {
-    public static class ValidationConstatnts
+    public static class ValidationConstants
     {
         public static class Destination
         {

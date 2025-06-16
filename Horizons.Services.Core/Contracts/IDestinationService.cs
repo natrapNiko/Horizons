@@ -5,5 +5,7 @@
     public interface IDestinationService
     {
         Task<IEnumerable<DestinationIndexViewModel>> GetAllDestinationsAsync(string? userId);
+
+        Task<DestinationDetailsViewModel?> GetDestinationDetailsAsync(int? id, string? userId);
     }
 }

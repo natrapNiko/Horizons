@@ -10,6 +10,7 @@
             public const int DescriptionMaxLength = 250;
             public const int DescriptionMinLength = 10;
 
+            public const int PublishedOnLength = 10;
             public const string PublishedOnFormat = "dd-MM-yyyy";
         }
 

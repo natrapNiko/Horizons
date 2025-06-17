@@ -66,14 +66,51 @@
 
         [HttpGet]
         public async Task<IActionResult> Add()
-        { 
-            AddDestinationInputModel inputModel = new AddDestinationInputModel()
+        {
+            try
             {
-                PublishedOn = DateTime.UtcNow.ToString(PublishedOnFormat),
-                Terrains = await this.terrainService.GetTerrainsDropdownDataAsync()
-            };
+                AddDestinationInputModel inputModel = new AddDestinationInputModel()
+                {
+                    PublishedOn = DateTime.UtcNow.ToString(PublishedOnFormat),
+                    Terrains = await this.terrainService.GetTerrainsDropdownDataAsync()
+                };
 
-            return this.View(inputModel);
+                return this.View(inputModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
         }
+
+        [HttpPost]
+            public async Task<IActionResult> Add(AddDestinationInputModel inputModel)
+            {
+                try
+                {
+                    if (!this.ModelState.IsValid)
+                    {
+                        return this.RedirectToAction(nameof(Add));
+                    }
+
+                bool addResult = await this.destinationService
+                .AddDestinationAsync(this.GetUserId(), inputModel);
+
+                if (addResult == false)
+                {
+                    this.ModelState.AddModelError(string.Empty, "Failed to add destination.");
+                    return this.RedirectToAction(nameof(Add));
+                }
+
+                return this.RedirectToAction(nameof(Index));
+            }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return this.RedirectToAction(nameof(Index));
+                }
+            }
+        
     }
 }

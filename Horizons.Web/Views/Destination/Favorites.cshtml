@@ -1,4 +1,7 @@
-﻿@* @{
+﻿@using Horizons.Web.ViewModels.Destination
+@model IEnumerable<FavoriteDestinationViewModel>?
+
+@{
     ViewData["Title"] = "Favorite Destinations";
 }
 
@@ -16,7 +19,7 @@
 }
 else
 {
-    @foreach (var destination in Model)
+    @foreach (FavoriteDestinationViewModel destination in Model)
     {
         <div class="row align-items-center mb-4 py-3" style="border-bottom: 1px solid #ccc;">
             <div class="col-md-2 text-center">
@@ -47,4 +50,4 @@ else
     <a asp-controller="Destination" asp-action="Index" class="btn btn-primary mt-3">
         <i class="fas fa-arrow-left"></i> Back to Destinations
     </a>
-</div> *@
+</div>

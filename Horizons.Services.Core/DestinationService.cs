@@ -6,6 +6,7 @@
     using Horizons.Web.ViewModels.Destination;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Threading.Tasks;
@@ -233,5 +234,65 @@
 
             return opResult;
         }
+
+        public async Task<IEnumerable<FavoriteDestinationViewModel>?> GetUserFavoriteDestinationsAsync(string userId)
+        {
+            IEnumerable<FavoriteDestinationViewModel>? favDestinations = null;
+            IdentityUser? user = await this.userManager
+                .FindByIdAsync(userId);
+            if (user != null)
+            {
+                favDestinations = await this.dbContext
+                    .UsersDestinations
+                    .Include(ud => ud.Destination)
+                    .ThenInclude(d => d.Terrain)
+                    .Where(ud => ud.UserId.ToLower() == userId.ToLower())
+                    .Select(ud => new FavoriteDestinationViewModel()
+                    {
+                        Id = ud.Destination.Id,
+                        Name = ud.Destination.Name,
+                        ImageUrl = ud.Destination.ImageUrl,
+                        Terrain = ud.Destination.Terrain.Name,
+                    })
+                    .ToArrayAsync();
+            }
+
+            return favDestinations;
+        }
+
+        public async Task<bool> AddDestinationToFavoritesAsync(string userId, int destinationId)
+        {
+            bool opResult = false; //operation Result
+            IdentityUser? user = await this.userManager
+                .FindByIdAsync(userId);
+            Destination? favDestination = await this.dbContext
+                .Destinations
+                .FindAsync(destinationId);
+            if ((user != null) && (favDestination != null) && 
+                (favDestination.PublisherId.ToLower() != userId.ToLower()))
+            {
+                UserDestination? userFavDestination = await this.dbContext 
+                    .UsersDestinations
+                    .SingleOrDefaultAsync(ud =>
+                        ud.UserId.ToLower() == userId.ToLower() &&
+                        ud.DestinationId == destinationId);
+                if(userFavDestination == null)
+                {
+                    userFavDestination = new UserDestination()
+                    {
+                        UserId = userId,
+                        DestinationId = destinationId,
+                    };
+
+                    await this.dbContext.UsersDestinations.AddAsync(userFavDestination);
+                    await this.dbContext.SaveChangesAsync();
+
+                    opResult = true; //operation was successful
+                }
+            }
+
+            return opResult;
+        }
+
     }
 }

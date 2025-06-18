@@ -17,6 +17,10 @@
 
         Task<DeleteDestinationInputModel?> GetDestinationForDeletingAsync(string userId, int? destId);
 
-        Task<bool> SoftDeleteDestinationAsync(string userId, DeleteDestinationInputModel inputModel );
+        Task<bool> SoftDeleteDestinationAsync(string userId, DeleteDestinationInputModel inputModel);
+
+        Task<IEnumerable<FavoriteDestinationViewModel>?> GetUserFavoriteDestinationsAsync(string userId);
+
+        Task<bool> AddDestinationToFavoritesAsync(string userId, int destinationId);
     }
 }

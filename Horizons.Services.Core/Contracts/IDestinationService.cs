@@ -14,5 +14,9 @@
         Task<EditDestinationInputModel?> GetDestinationForEditingAsync(string userId, int? destId); 
 
         Task<bool> PersistUpdatedDestinationAsync(string userId, EditDestinationInputModel inputModel);
+
+        Task<DeleteDestinationInputModel?> GetDestinationForDeletingAsync(string userId, int? destId);
+
+        Task<bool> SoftDeleteDestinationAsync(string userId, DeleteDestinationInputModel inputModel );
     }
 }

@@ -162,6 +162,54 @@
                 return this.RedirectToAction(nameof(Index));
             }
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            try
+            {
+                string? userId = this.GetUserId();
+                DeleteDestinationInputModel? deleteInputModel = await this.destinationService
+                    .GetDestinationForDeletingAsync(userId, id);
+                if (deleteInputModel == null)
+                {
+                    return this.RedirectToAction(nameof(Index));
+                }
+                
+                return this.View(deleteInputModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(DeleteDestinationInputModel inputModel)
+        {
+            try
+            {
+                if (!this.ModelState.IsValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid input data.");
+                    return this.View(inputModel);
+                }
+                bool deleteResult = await this.destinationService
+                    .SoftDeleteDestinationAsync(this.GetUserId(), inputModel);
+                if (deleteResult == false)
+                {
+                    this.ModelState.AddModelError(string.Empty, "Failed to edit destination.");
+                    return this.View(inputModel);
+                }
+
+                return this.RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

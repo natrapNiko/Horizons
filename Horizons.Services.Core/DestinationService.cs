@@ -182,5 +182,56 @@
 
             return opResult;
         }
+
+        public async Task<DeleteDestinationInputModel?> GetDestinationForDeletingAsync(string userId, int? destId)
+        {
+            DeleteDestinationInputModel? deleteModel = null;
+
+            if (destId != null)
+            {
+                Destination? deleteDestinationModel = await this.dbContext
+                    .Destinations
+                    .Include(d => d.Publisher)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(d => d.Id == destId);
+
+                if ((deleteDestinationModel != null) &&
+                    (deleteDestinationModel.PublisherId.ToLower() == userId.ToLower()))
+                {
+                    deleteModel = new DeleteDestinationInputModel()
+                    {
+                        Id = deleteDestinationModel.Id,
+                        Name = deleteDestinationModel.Name, 
+                        Publisher = deleteDestinationModel.Publisher.NormalizedUserName,
+                        PublisherId = deleteDestinationModel.PublisherId,
+                    };
+                }
+            }
+
+            return deleteModel;
+        }
+
+        public async Task<bool> SoftDeleteDestinationAsync(string userId, DeleteDestinationInputModel inputModel)
+        {
+            bool opResult = false; //operation Result
+
+            IdentityUser? user = await this.userManager
+                .FindByIdAsync(userId);
+
+            Destination? deletedDest = await this.dbContext // get the destination to be deleted
+                .Destinations
+                .FindAsync(inputModel.Id);
+            if ((user != null) && (deletedDest != null) &&
+                (deletedDest.PublisherId.ToLower() == userId.ToLower()))
+            {
+                deletedDest.IsDeleted = true; //soft delete the destination
+
+                await this.dbContext.SaveChangesAsync();
+
+                opResult = true; //operation was successful
+            }
+
+            return opResult;
+        }
     }
 }

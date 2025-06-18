@@ -3,6 +3,7 @@ namespace Horizons.Web
     using Horizons.Data;
     using Horizons.Services.Core;
     using Horizons.Services.Core.Contracts;
+
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     public class Program

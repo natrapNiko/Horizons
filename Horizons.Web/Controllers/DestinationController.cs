@@ -259,5 +259,30 @@
                 return this.RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromFavorites(int? id)
+        {
+            try
+            {
+                string? userId = this.GetUserId();
+                if (id == null)
+                {
+                    return this.RedirectToAction(nameof(Index));
+                }
+                bool removeFromFavoritesResult = await this.destinationService
+                    .RemoveDestinationFromFavoritesAsync(userId, id.Value);
+                if (removeFromFavoritesResult == false)
+                {
+                    return this.RedirectToAction(nameof(Index));
+                }
+                return this.RedirectToAction(nameof(Favorites));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

@@ -94,8 +94,8 @@
                 .Terrains
                 .FindAsync(inputModel.TerrainId);
 
-            bool isPublishedOnDateValid = DateTime.TryParseExact(inputModel.PublishedOn,PublishedOnFormat ,CultureInfo.InvariantCulture,
-                DateTimeStyles.None ,out DateTime publishedOnDate);
+            bool isPublishedOnDateValid = DateTime.TryParseExact(inputModel.PublishedOn, PublishedOnFormat, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime publishedOnDate);
 
             if ((user != null) && (terrainRef != null) && (isPublishedOnDateValid))
             {
@@ -142,7 +142,7 @@
                         TerrainId = editDestinationModel.TerrainId,
                         PublishedOn = editDestinationModel.PublishedOn.ToString(PublishedOnFormat),
                         PublisherId = editDestinationModel.PublisherId,
-                    }; 
+                    };
                 }
             }
 
@@ -166,7 +166,7 @@
 
             bool isPublishedOnDateValid = DateTime.TryParseExact(inputModel.PublishedOn, PublishedOnFormat, CultureInfo.InvariantCulture,
                 DateTimeStyles.None, out DateTime publishedOnDate);
-            if((user != null) && (terrainRef != null) &&
+            if ((user != null) && (terrainRef != null) &&
                 (updatedDest != null) && (isPublishedOnDateValid) &&
                 updatedDest.PublisherId.ToLower() == userId.ToLower())
             {
@@ -202,7 +202,7 @@
                     deleteModel = new DeleteDestinationInputModel()
                     {
                         Id = deleteDestinationModel.Id,
-                        Name = deleteDestinationModel.Name, 
+                        Name = deleteDestinationModel.Name,
                         Publisher = deleteDestinationModel.Publisher.NormalizedUserName,
                         PublisherId = deleteDestinationModel.PublisherId,
                     };
@@ -268,15 +268,15 @@
             Destination? favDestination = await this.dbContext
                 .Destinations
                 .FindAsync(destinationId);
-            if ((user != null) && (favDestination != null) && 
+            if ((user != null) && (favDestination != null) &&
                 (favDestination.PublisherId.ToLower() != userId.ToLower()))
             {
-                UserDestination? userFavDestination = await this.dbContext 
+                UserDestination? userFavDestination = await this.dbContext
                     .UsersDestinations
                     .SingleOrDefaultAsync(ud =>
                         ud.UserId.ToLower() == userId.ToLower() &&
                         ud.DestinationId == destinationId);
-                if(userFavDestination == null)
+                if (userFavDestination == null)
                 {
                     userFavDestination = new UserDestination()
                     {
@@ -294,5 +294,31 @@
             return opResult;
         }
 
+        public async Task<bool> RemoveDestinationFromFavoritesAsync(string userId, int destinationId)
+        {
+            bool opResult = false; //operation Result
+            IdentityUser? user = await this.userManager
+                .FindByIdAsync(userId);
+            Destination? favDestination = await this.dbContext
+                .Destinations
+                .FindAsync(destinationId);
+            if ((user != null) && (favDestination != null) &&
+                (favDestination.PublisherId.ToLower() != userId.ToLower()))
+            {
+                UserDestination? userFavDestination = await this.dbContext
+                    .UsersDestinations
+                    .SingleOrDefaultAsync(ud =>
+                        ud.UserId.ToLower() == userId.ToLower() &&
+                        ud.DestinationId == destinationId);
+                if (userFavDestination != null)
+                {
+                    this.dbContext.UsersDestinations.Remove(userFavDestination);
+                    await this.dbContext.SaveChangesAsync();
+
+                    opResult = true; //operation was successful
+                }
+            }
+            return opResult;
+        }
     }
 }

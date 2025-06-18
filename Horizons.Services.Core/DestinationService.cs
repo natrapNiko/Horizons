@@ -116,5 +116,71 @@
 
             return opResult;
         }
+
+        public async Task<EditDestinationInputModel?> GetDestinationForEditingAsync(string userId, int? destId)
+        {
+            EditDestinationInputModel? editModel = null;
+
+            if (destId != null)
+            {
+                Destination? editDestinationModel = await this.dbContext
+                    .Destinations
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(d => d.Id == destId);
+
+                // check if the user is the publisher of the destination
+                if ((editDestinationModel != null) &&
+                    (editDestinationModel.PublisherId.ToLower() == userId.ToLower()))
+                {
+                    editModel = new EditDestinationInputModel()
+                    {
+                        Id = editDestinationModel.Id,
+                        Name = editDestinationModel.Name,
+                        Description = editDestinationModel.Description,
+                        ImageUrl = editDestinationModel.ImageUrl,
+                        TerrainId = editDestinationModel.TerrainId,
+                        PublishedOn = editDestinationModel.PublishedOn.ToString(PublishedOnFormat),
+                        PublisherId = editDestinationModel.PublisherId,
+                    }; 
+                }
+            }
+
+            return editModel;
+        }
+
+        public async Task<bool> PersistUpdatedDestinationAsync(string userId, EditDestinationInputModel inputModel)
+        {
+            bool opResult = false; //operation Result
+
+            IdentityUser? user = await this.userManager
+                .FindByIdAsync(userId);
+
+            Destination? updatedDest = await this.dbContext // get the destination to be updated
+                .Destinations
+                .FindAsync(inputModel.Id);
+
+            Terrain? terrainRef = await this.dbContext // get the terrain reference
+                .Terrains
+                .FindAsync(inputModel.TerrainId);
+
+            bool isPublishedOnDateValid = DateTime.TryParseExact(inputModel.PublishedOn, PublishedOnFormat, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime publishedOnDate);
+            if((user != null) && (terrainRef != null) &&
+                (updatedDest != null) && (isPublishedOnDateValid) &&
+                updatedDest.PublisherId.ToLower() == userId.ToLower())
+            {
+                updatedDest.Name = inputModel.Name;
+                updatedDest.Description = inputModel.Description;
+                updatedDest.ImageUrl = inputModel.ImageUrl;
+                updatedDest.PublishedOn = publishedOnDate;
+                updatedDest.TerrainId = inputModel.TerrainId;
+
+                await this.dbContext.SaveChangesAsync();
+
+                opResult = true; //operation was successful
+            }
+
+            return opResult;
+        }
     }
 }

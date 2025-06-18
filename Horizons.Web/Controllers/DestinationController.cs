@@ -85,14 +85,14 @@
         }
 
         [HttpPost]
-            public async Task<IActionResult> Add(AddDestinationInputModel inputModel)
+        public async Task<IActionResult> Add(AddDestinationInputModel inputModel)
+        {
+            try
             {
-                try
+                if (!this.ModelState.IsValid)
                 {
-                    if (!this.ModelState.IsValid)
-                    {
-                        return this.RedirectToAction(nameof(Add));
-                    }
+                    return this.View(inputModel);
+                }
 
                 bool addResult = await this.destinationService
                 .AddDestinationAsync(this.GetUserId(), inputModel);
@@ -100,17 +100,68 @@
                 if (addResult == false)
                 {
                     this.ModelState.AddModelError(string.Empty, "Failed to add destination.");
-                    return this.RedirectToAction(nameof(Add));
+                    return this.View(inputModel);
                 }
 
                 return this.RedirectToAction(nameof(Index));
             }
-                catch (Exception e)
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            try
+            {
+                string? userId = this.GetUserId();
+                EditDestinationInputModel? editModel = await this.destinationService
+                    .GetDestinationForEditingAsync(userId, id);
+                if (editModel == null)
                 {
-                    Console.WriteLine(e.Message);
                     return this.RedirectToAction(nameof(Index));
                 }
+
+                editModel.Terrains = await this.terrainService
+                    .GetTerrainsDropdownDataAsync();
+
+                return this.View(editModel);
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditDestinationInputModel inputModel)
+        {
+            try
+            {
+                if (!this.ModelState.IsValid)
+                {
+                    return this.View(inputModel);
+                }
+                bool editResult = await this.destinationService
+                    .PersistUpdatedDestinationAsync(this.GetUserId(), inputModel);
+                if (editResult == false)
+                {
+                    this.ModelState.AddModelError(string.Empty, "Failed to edit destination.");
+                    return this.View(inputModel);
+                }
+
+                return this.RedirectToAction(nameof(Details), new { id = inputModel.Id });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.RedirectToAction(nameof(Index));
+            }
+        }
         
     }
 }

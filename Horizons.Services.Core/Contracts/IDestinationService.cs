@@ -9,5 +9,10 @@
         Task<DestinationDetailsViewModel?> GetDestinationDetailsAsync(int? id, string? userId);
 
         Task<bool> AddDestinationAsync(string userId, AddDestinationInputModel inputModel);
+
+        //destId is DestinationId
+        Task<EditDestinationInputModel?> GetDestinationForEditingAsync(string userId, int? destId); 
+
+        Task<bool> PersistUpdatedDestinationAsync(string userId, EditDestinationInputModel inputModel);
     }
 }
